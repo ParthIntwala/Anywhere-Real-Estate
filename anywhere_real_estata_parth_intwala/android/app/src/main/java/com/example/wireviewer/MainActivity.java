@@ -1,4 +1,4 @@
-package com.example.anywhere_real_estata_parth_intwala;
+package com.example.wireviewer;
 
 import io.flutter.embedding.android.FlutterActivity;
 
