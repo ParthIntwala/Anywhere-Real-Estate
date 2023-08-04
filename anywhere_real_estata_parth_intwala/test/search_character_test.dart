@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 //screen
-import 'package:anywhere_real_estata_parth_intwala/Screens/list.dart';
+import 'package:anywhere_real_estata_parth_intwala/Widgets/search_character_dialog.dart';
 import 'package:anywhere_real_estata_parth_intwala/APIOperation/fetch_data.dart';
 //model
 import 'package:anywhere_real_estata_parth_intwala/Models/character.dart';

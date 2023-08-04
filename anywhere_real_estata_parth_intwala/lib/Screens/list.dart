@@ -15,6 +15,7 @@ import '../Models/character.dart';
 import '../Widgets/phone_item_detail.dart';
 import '../Widgets/tablet_item_detail.dart';
 import '../Widgets/show_dialog.dart';
+import '../Widgets/search_character_dialog.dart';
 
 class ListScreen extends StatefulWidget {
   static const String listScreenRoute = "/listScreen";
@@ -32,7 +33,6 @@ class _ListScreenState extends State<ListScreen> {
   List<Character> displayCharacters = [];
   late Size size;
   String searchString = "";
-  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -56,43 +56,12 @@ class _ListScreenState extends State<ListScreen> {
         trailing: CupertinoButton(
           padding: const EdgeInsets.only(bottom: 1),
           onPressed: () async {
-            Widget searchDialog = Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CupertinoTextField(
-                  controller: searchController,
-                  onSubmitted: (value) {
-                    if (value.isNotEmpty) {
-                      searchString = value.toLowerCase();
-                    } else {
-                      searchString = "";
-                    }
-
-                    List<Character> toDisplay =
-                        FilterDisplayCharacters.showSearchCharacters(
-                            searchString.toLowerCase(), fetchedCharacters);
-                    setState(() {
-                      displayCharacters = toDisplay;
-                    });
-                    Navigator.of(context).pop();
-                  },
-                ),
-                CupertinoButton(
-                  child: Text(
-                    "Cancel",
-                    style: TextStyle(
-                      color: Themes.themeColor1,
-                    ),
-                  ),
-                  onPressed: () {
-                    searchString = "";
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-
-            await ShowDialog.viewDialog(context, searchDialog);
+            List<Character> filteredCharacters =
+                await SearchCharacterDialog.showSearchDialog(context,
+                    searchString, fetchedCharacters, displayCharacters);
+            setState(() {
+              displayCharacters = filteredCharacters;
+            });
           },
           child: const Icon(CupertinoIcons.search),
         ),
@@ -166,29 +135,5 @@ class _ListScreenState extends State<ListScreen> {
         ),
       ),
     );
-  }
-}
-
-class FilterDisplayCharacters {
-  static List<Character> showSearchCharacters(
-      String searchString, List<Character> fetched) {
-    List<Character> characters = [];
-    if (searchString == "") {
-      characters = fetched;
-    } else {
-      for (var character in fetched) {
-        if (character.name.toLowerCase().contains(searchString)) {
-          characters.add(character);
-        } else if (character.description != null) {
-          character.description!.toLowerCase().contains(searchString)
-              ? characters.add(character)
-              : null;
-        } else {
-          null;
-        }
-      }
-    }
-
-    return characters;
   }
 }
