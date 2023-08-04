@@ -17,10 +17,11 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     return CupertinoPageScaffold(
       child: Column(
         children: [
-          const CurvedClip(),
+          CurvedClip(height: height / 3),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -37,34 +38,34 @@ class HomeScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 CupertinoButton(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Let's go inside  ",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Themes.themeColor1,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        Icon(
-                          CupertinoIcons.chevron_right_circle_fill,
-                          size: 20,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Let's go inside  ",
+                        style: TextStyle(
+                          fontSize: 20,
                           color: Themes.themeColor1,
                         ),
-                      ],
-                    ),
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(ListScreen.listScreenRoute);
-                    }),
+                        textAlign: TextAlign.center,
+                      ),
+                      Icon(
+                        CupertinoIcons.chevron_right_circle_fill,
+                        size: 20,
+                        color: Themes.themeColor1,
+                      ),
+                    ],
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(ListScreen.listScreenRoute);
+                  },
+                ),
               ],
             ),
           ),
           Transform.flip(
             flipY: true,
-            child: const CurvedClip(),
+            child: CurvedClip(height: (height / 3)),
           ),
         ],
       ),

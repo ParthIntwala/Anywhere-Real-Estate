@@ -34,7 +34,7 @@ class FetchData with ChangeNotifier {
         List<String> detail = singleCharacter["Text"].split(" - ");
         Character character = Character(
           name: detail[0],
-          description: detail[1],
+          description: detail.length > 1 ? detail[1] : "",
           url: singleCharacter["Icon"]["URL"],
         );
         fetchedCharacters.add(character);

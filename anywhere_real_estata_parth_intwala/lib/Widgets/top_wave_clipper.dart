@@ -5,17 +5,15 @@ class TopWaveClipper extends CustomClipper<Path> {
 
   @override
   Path getClip(Size size) {
-    debugPrint(size.width.toString());
-
     Path path = Path();
-    path.lineTo(0, size.height - 100);
-    Offset firstCurveStart = Offset(size.width / 4, size.height - 100);
-    Offset firstCurveEnd = Offset(size.width / 2, size.height - 50);
+    path.lineTo(0, size.height * 3 / 4);
+    Offset firstCurveStart = Offset(size.width / 4, size.height / 2);
+    Offset firstCurveEnd = Offset(size.width / 2, size.height * 3 / 4);
     path.quadraticBezierTo(firstCurveStart.dx, firstCurveStart.dy,
         firstCurveEnd.dx, firstCurveEnd.dy);
 
     Offset secondCurveStart = Offset(size.width * 3 / 4, size.height);
-    Offset secondCurveEnd = Offset(size.width, size.height);
+    Offset secondCurveEnd = Offset(size.width, size.height * 3 / 4);
     path.quadraticBezierTo(secondCurveStart.dx, secondCurveStart.dy,
         secondCurveEnd.dx, secondCurveEnd.dy);
     path.lineTo(size.width, 0);

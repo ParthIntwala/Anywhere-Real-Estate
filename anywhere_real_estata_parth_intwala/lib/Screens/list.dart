@@ -8,10 +8,13 @@ import '../APIOperation/fetch_data.dart';
 //utilities
 import '../Utilities/android_app.dart';
 import '../Utilities/ios_app.dart';
+import '../Utilities/themes.dart';
 //models
 import '../Models/character.dart';
 //widgets
 import '../Widgets/phone_item_detail.dart';
+import '../Widgets/tablet_item_detail.dart';
+import '../Widgets/show_dialog.dart';
 
 class ListScreen extends StatefulWidget {
   static const String listScreenRoute = "/listScreen";
@@ -27,6 +30,9 @@ class _ListScreenState extends State<ListScreen> {
   bool _isInit = true;
   List<Character> fetchedCharacters = [];
   List<Character> displayCharacters = [];
+  late Size size;
+  String searchString = "";
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -38,6 +44,7 @@ class _ListScreenState extends State<ListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    size = MediaQuery.of(context).size;
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         brightness: Brightness.dark,
@@ -46,15 +53,81 @@ class _ListScreenState extends State<ListScreen> {
               ? AndriodApp.navigationBarTitle
               : IOSApp.navigationBarTitle,
         ),
+        trailing: CupertinoButton(
+          padding: const EdgeInsets.only(bottom: 1),
+          onPressed: () async {
+            Widget searchDialog = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CupertinoTextField(
+                  controller: searchController,
+                  onSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      searchString = value.toLowerCase();
+                    } else {
+                      searchString = "";
+                    }
+
+                    List<Character> toDisplay =
+                        FilterDisplayCharacters.showSearchCharacters(
+                            searchString.toLowerCase(), fetchedCharacters);
+                    setState(() {
+                      displayCharacters = toDisplay;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+                CupertinoButton(
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(
+                      color: Themes.themeColor1,
+                    ),
+                  ),
+                  onPressed: () {
+                    searchString = "";
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+
+            await ShowDialog.viewDialog(context, searchDialog);
+          },
+          child: const Icon(CupertinoIcons.search),
+        ),
       ),
       child: SafeArea(
         maintainBottomViewPadding: true,
         minimum: const EdgeInsets.all(10),
         child: FutureBuilder(
-          future: _future,
+          future: _future.catchError((error) async {
+            Widget searchDialog = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(error.toString()),
+                CupertinoButton(
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(
+                      color: Themes.themeColor1,
+                    ),
+                  ),
+                  onPressed: () {
+                    searchString = "";
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+
+            await ShowDialog.viewDialog(context, searchDialog);
+          }),
           builder: (ctx, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator.adaptive();
+              return const Center(
+                child: CircularProgressIndicator.adaptive(),
+              );
             } else {
               if (_isInit) {
                 fetchedCharacters =
@@ -64,11 +137,24 @@ class _ListScreenState extends State<ListScreen> {
               }
               return displayCharacters.isNotEmpty
                   ? ListView(
-                      children: displayCharacters
-                          .map((character) => PhoneItemDetail(
-                              key: ValueKey(character.name),
-                              character: character))
-                          .toList())
+                      children: size.width > 700
+                          ? displayCharacters
+                              .map(
+                                (character) => TabletItemDetail(
+                                  key: ValueKey(character.name),
+                                  character: character,
+                                ),
+                              )
+                              .toList()
+                          : displayCharacters
+                              .map(
+                                (character) => PhoneItemDetail(
+                                  key: ValueKey(character.name),
+                                  character: character,
+                                ),
+                              )
+                              .toList(),
+                    )
                   : const Center(
                       child: Text(
                         "No item matching the search query",
@@ -80,5 +166,29 @@ class _ListScreenState extends State<ListScreen> {
         ),
       ),
     );
+  }
+}
+
+class FilterDisplayCharacters {
+  static List<Character> showSearchCharacters(
+      String searchString, List<Character> fetched) {
+    List<Character> characters = [];
+    if (searchString == "") {
+      characters = fetched;
+    } else {
+      for (var character in fetched) {
+        if (character.name.toLowerCase().contains(searchString)) {
+          characters.add(character);
+        } else if (character.description != null) {
+          character.description!.toLowerCase().contains(searchString)
+              ? characters.add(character)
+              : null;
+        } else {
+          null;
+        }
+      }
+    }
+
+    return characters;
   }
 }

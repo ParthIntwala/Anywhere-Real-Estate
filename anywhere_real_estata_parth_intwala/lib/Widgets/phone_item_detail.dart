@@ -23,7 +23,7 @@ class PhoneItemDetail extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         side: BorderSide(
           color: Themes.themeColor1,
-          width: isAndroid ? 2 : 0,
+          width: 2,
         ),
       ),
       color: isAndroid ? Colors.white : Themes.themeColor2,

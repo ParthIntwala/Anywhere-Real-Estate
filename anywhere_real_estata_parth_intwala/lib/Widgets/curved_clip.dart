@@ -6,7 +6,8 @@ import './top_wave_clipper.dart';
 import '../Utilities/themes.dart';
 
 class CurvedClip extends StatelessWidget {
-  const CurvedClip({super.key});
+  final double height;
+  const CurvedClip({required this.height, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +17,14 @@ class CurvedClip extends StatelessWidget {
           clipper: const TopWaveClipper(),
           child: Container(
             color: Themes.themeColor1,
-            height: 300,
+            height: height,
           ),
         ),
         ClipPath(
           clipper: const TopWaveClipper(),
           child: Container(
             color: Themes.themeColor2,
-            height: 280,
+            height: height - 20,
           ),
         ),
       ],
